@@ -1,0 +1,13 @@
+ Private Declare Sub keybd_event Lib "user32" (ByVal bVk As Byte, ByVal bScan As Byte, ByVal dwFlags As Long, ByVal dwExtraInfo As Long)
+    Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+    Private Const KEYEVENTF_KEYUP = &H2
+    Const VK_NUMLOCK = &H90
+    Const KEYEVENTF_EXTENDEDKEY = &H1
+    Declare Function GetKeyState Lib "user32" Alias "GetKeyState" (ByVal ByValnVirtKey As Integer) As Short
+
+ Private Sub numlockON()
+        keybd_event(VK_NUMLOCK, 0, 0, 0) ' Press NUMLOCK key down
+        keybd_event(VK_NUMLOCK, 0, KEYEVENTF_KEYUP, 0) ' Release it
+    End Sub
+
+If Not GetKeyState(VK_NUMLOCK) Then numlockON()
