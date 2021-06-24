@@ -1,13 +1,22 @@
- Private Declare Sub keybd_event Lib "user32" (ByVal bVk As Byte, ByVal bScan As Byte, ByVal dwFlags As Long, ByVal dwExtraInfo As Long)
-    Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-    Private Const KEYEVENTF_KEYUP = &H2
-    Const VK_NUMLOCK = &H90
-    Const KEYEVENTF_EXTENDEDKEY = &H1
-    Declare Function GetKeyState Lib "user32" Alias "GetKeyState" (ByVal ByValnVirtKey As Integer) As Short
+Public Const VK_NUMLOCK = &H90
+Declare Function GetKeyState Lib "user32" Alias "GetKeyState" _
+(ByVal ByValnVirtKey As Integer) As Short
 
- Private Sub numlockON()
-        keybd_event(VK_NUMLOCK, 0, 0, 0) ' Press NUMLOCK key down
-        keybd_event(VK_NUMLOCK, 0, KEYEVENTF_KEYUP, 0) ' Release it
-    End Sub
+Private Sub me_keyDown(ByVal sender As System.Object, _
+ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+    If e.KeyCode = Keys.NumLock And Not NLKey Then
+        If Not GetKeyState(VK_NUMLOCK) Then
+            e.Handled = True
+            NumlOn.Start()
+            Exit Sub
+        End If
+    End If
+End sub
 
-If Not GetKeyState(VK_NUMLOCK) Then numlockON()
+Private Sub NumlOn_Tick(sender As Object, e As EventArgs) Handles NumlOn.Tick
+    NLKey = True
+    If Not GetKeyState(VK_NUMLOCK) Then numlockON()
+    Application.DoEvents()
+    NumlOn.Stop()
+    NLKey = False
+End Sub
