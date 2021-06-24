@@ -1,22 +1,25 @@
-Public Const VK_NUMLOCK = &H90
-Declare Function GetKeyState Lib "user32" Alias "GetKeyState" _
-(ByVal ByValnVirtKey As Integer) As Short
+[DllImport("coredll.dll")]
 
-Private Sub me_keyDown(ByVal sender As System.Object, _
-ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
-    If e.KeyCode = Keys.NumLock And Not NLKey Then
-        If Not GetKeyState(VK_NUMLOCK) Then
-            e.Handled = True
-            NumlOn.Start()
-            Exit Sub
-        End If
-    End If
-End sub
+public static extern void keybd_event(int vk, byte bScan, int dwFlags, int dwExtraInfo);
 
-Private Sub NumlOn_Tick(sender As Object, e As EventArgs) Handles NumlOn.Tick
-    NLKey = True
-    If Not GetKeyState(VK_NUMLOCK) Then numlockON()
-    Application.DoEvents()
-    NumlOn.Stop()
-    NLKey = False
-End Sub
+public static extern short GetKeyState(int nVirtKey);
+
+const int VK_NUMLOCK = (int)System.Windows.Forms.Keys.NumLock;
+
+const byte KEYEVENTF_KEYUP = 0x0002;
+
+private static void EnableNumLock(){
+
+short keystate = GetKeyState(VK_NUMLOCK);
+
+if (keystate == 0)
+
+{ // Numlock is deactivatied --> activate it
+
+keybd_event(VK_NUMLOCK, 1, 0, 0);
+
+keybd_event(VK_NUMLOCK, 0, KEYEVENTF_KEYUP, 0);
+
+}
+
+}
